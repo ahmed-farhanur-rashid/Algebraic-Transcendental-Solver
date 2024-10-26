@@ -1,3 +1,6 @@
+// Standard Version Number Format --- MAJOR.MINOR.PATCH
+// Remove suppress warnings when debugging
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -9,32 +12,36 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 public class InputOutputUI extends JFrame {
 
     // Text fields for input (4)
-    private JTextField functionField;
-    private JTextField aField;
-    private JTextField bField;
-    private JTextField toleranceField;
+    private final JTextField functionField;
+    private final JTextField aField;
+    private final JTextField bField;
+    private final JTextField toleranceField;
 
     // Radio buttons for selecting calculation methods (3)
-    private JRadioButton bisectionRadio;
-    private JRadioButton falsePositionRadio;
-    private JRadioButton newtonRaphsonRadio;
+    private final JRadioButton bisectionRadio;
+    private final JRadioButton falsePositionRadio;
+    private final JRadioButton newtonRaphsonRadio;
 
     // Checkbox for automating finding process for [a,b] (1)
-    private JCheckBox autoFind_AB_Checkbox;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final JCheckBox autoFind_AB_Checkbox;
 
     // Calculate Button and Root (2)
-    private JButton calculateButton;
-    private JLabel resultLabel;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final JButton calculateButton;
+    private final JLabel resultLabel;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final JButton clearButton;
 
     // Table to show iterations (2)
-    private JTable table;
+    private final JTable table;
     private DefaultTableModel tableModel;
 
     // Constructor
     public InputOutputUI() { // Changed this line
 
         // Frame Setup
-        this.setTitle("Algebraic & Transcendental Equation Solver (Beta 0.2.1)");
+        this.setTitle("Algebraic & Transcendental Equation Solver (Stable Release 1.0.0)");
         this.setSize(750, 750);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
@@ -42,6 +49,9 @@ public class InputOutputUI extends JFrame {
         // Input Box Creation & Border Addition
         JPanel inputPanel = new JPanel(new GridLayout(9, 2, 10, 10));
         inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JPanel shortPanel = new JPanel(new GridLayout(1, 2, 20, 10));
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         functionField = new JTextField();
         aField = new JTextField();
@@ -60,19 +70,22 @@ public class InputOutputUI extends JFrame {
         methodGroup.add(newtonRaphsonRadio);
 
         calculateButton = new JButton("Calculate Root");
-        calculateButton.addActionListener(new calculateButtonListener());
+        calculateButton.addActionListener(new CalculateButtonListener());
+
+        clearButton = new JButton("Clear");
+        clearButton.addActionListener(new ClearButtonListener());
 
         resultLabel = new JLabel("Root: ");
 
         // Adding components To JPanel
         inputPanel.add(new JLabel("Enter f(x):"));
         inputPanel.add(functionField);
+        inputPanel.add(new JLabel("Enter Tolerance:"));
+        inputPanel.add(toleranceField);
         inputPanel.add(new JLabel("Enter Lower Bound (a):"));
         inputPanel.add(aField);
         inputPanel.add(new JLabel("Enter Upper Bound (b):"));
         inputPanel.add(bField);
-        inputPanel.add(new JLabel("Enter Tolerance:"));
-        inputPanel.add(toleranceField);
 
         inputPanel.add(new JLabel(""));
         inputPanel.add(autoFind_AB_Checkbox);
@@ -87,15 +100,17 @@ public class InputOutputUI extends JFrame {
         inputPanel.add(newtonRaphsonRadio);
 
         inputPanel.add(calculateButton);
-        inputPanel.add(resultLabel);
+
+        shortPanel.add(resultLabel);
+        shortPanel.add(clearButton);
+
+        inputPanel.add(shortPanel);
 
         // Adding the input panel to the top of the BorderLayout
         this.add(inputPanel, BorderLayout.NORTH);
 
-        // Setting up the table for further manipulation
-        //String[] columnNames = {"Iteration", "Lower Bound (a)", "Upper Bound (b)", "Midpoint", "f(a)", "f(b)", "f(Midpoint)"};
-        //tableModel = new DefaultTableModel(columnNames, 0);
-        tableModel = new DefaultTableModel();
+        // Table shenanigans
+        tableModel = new DefaultTableModel(); // Dummy table model, needed to create table properly.
         table = new JTable(tableModel);
 
         // Created a scrollPane
@@ -107,7 +122,7 @@ public class InputOutputUI extends JFrame {
         setVisible(true);
     }
 
-    private class calculateButtonListener implements ActionListener {
+    private class CalculateButtonListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -115,37 +130,57 @@ public class InputOutputUI extends JFrame {
                 String stringExpression = functionField.getText();
                 Expression expression = new ExpressionBuilder(stringExpression).variables("x").build();
 
+
                 // Code snippet to find interval [a, b]
                 double a = 0;
                 double b = 1;
-                boolean found = false;
+                boolean foundInterval = false;
 
-                while (b <= 10000) {
-                    if ((f(expression, a) * f(expression, b)) < 0) {
-                        found = true;
+// First try: Search for the interval in positive range
+                while (b <= 5000) {
+                    if (f(expression, a) * f(expression, b) < 0) {
+                        foundInterval = true; // Found an interval
                         break;
-                    } else {
+                    }
+                    a = b;
+                    b++;
+                }
+
+                // If no interval found, search in the negative range
+                if (!foundInterval) {
+                    a = -5000;
+                    b = -4999;
+
+                    while (b < 0) {
+                        if (f(expression, a) * f(expression, b) < 0) {
+                            foundInterval = true; // Found an interval
+                            break;
+                        }
                         a = b;
                         b++;
                     }
                 }
 
-                if (found) {
+                if (foundInterval) {
                     aField.setText(String.valueOf(a));
                     bField.setText(String.valueOf(b));
-                } else {
-                    JOptionPane.showMessageDialog(null, "Couldn't find upper and lower bound [a, b] in range [0, 10K].\nPlease input manually.",
-                            "An Unexpected Error Occurred", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Interval Found");
                 }
+                else
+                {
+                    aField.setText("No interval found");
+                    bField.setText("No interval found");
+
+                    // Show an error message to the user
+                    Errors.noIntervalError();
+                }
+
                 // End of code snippet
 
                 double tolerance = Double.parseDouble(toleranceField.getText());
-
-                // Clearing previous table data
-                tableModel.setRowCount(0);
-
                 double root = 0;
 
+                // Clearing previous table data
                 tableModel.setRowCount(0);
 
                 if (bisectionRadio.isSelected()) {
@@ -166,20 +201,32 @@ public class InputOutputUI extends JFrame {
 
                 } else if (newtonRaphsonRadio.isSelected()) {
 
-                    String[] columnNames = {"Iteration", "Xn", "Xn+1"};
+                    String[] columnNames = {"Iteration", "<html>X<sub>n</sub></html>", "<html>X<sub>n+1</sub></html>"};
                     tableModel = new DefaultTableModel(columnNames, 0);
                     table.setModel(tableModel);
 
                     root = NewtonRaphson.execute(expression, a, b, tolerance, tableModel);
-
                 }
 
                 resultLabel.setText("Root: " + (Double.isNaN(root) ? "No root in interval" : root));
+                resultLabel.setForeground(Color.RED);
 
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Please check input and try again.",
-                        "An Unexpected Error Occurred", JOptionPane.ERROR_MESSAGE);
+                Errors.exceptionError();
             }
+        }
+    }
+
+    private class ClearButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            functionField.setText("");
+            toleranceField.setText("");
+            aField.setText("");
+            bField.setText("");
+            tableModel.setRowCount(0); // Clear the table
+            resultLabel.setText("Root: "); // Reset the result label
+            resultLabel.setForeground(Color.BLACK);
         }
     }
 
