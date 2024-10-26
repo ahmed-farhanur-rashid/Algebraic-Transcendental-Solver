@@ -7,6 +7,7 @@ public class NewtonRaphson {
 
     public static double execute(Expression expression, double a, double b, double tolerance, DefaultTableModel tableModel) {
 
+        int iteration = 0;
         double x_n; // Starting point
         double x_n_plus_1 = a; // Next approximation
 
@@ -25,6 +26,9 @@ public class NewtonRaphson {
 
                // Update x_n_plus_1 using the Newton-Raphson formula
                x_n_plus_1 = x_n - (f_of_x_n / df_of_x_n);
+
+               // Sending Table Data to the Table
+               tableModel.addRow(new Object[]{++iteration, x_n, x_n_plus_1});
 
            } while (Math.abs(x_n_plus_1 - x_n) > tolerance); // Continue until the function value is within tolerance
        } catch (ArithmeticException ex) {
