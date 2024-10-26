@@ -4,33 +4,36 @@ import javax.swing.table.DefaultTableModel;
 public class Bisection {
     public static double execute(Expression expression, double a, double b, double tolerance, DefaultTableModel tableModel) {
 
+        if (f(expression, a) * f(expression, b) > 0) return Double.NaN;
+
+        final int maxIterations = 1001;
         int iteration = 0;
         double mid = 0;
-
-        double f_of_a = f(expression, a);
         double f_of_mid;
-        double f_of_b = f(expression, b);
 
-        while(Math.abs(a - b) > tolerance) {
+        while(Math.abs(a - b) > tolerance && iteration < maxIterations) {
 
-            mid = (a + b) / 2;
+            mid = a + (b - a) / 2; // Same as mid = (a + b) / 2 but is more error free
+
             f_of_mid = f(expression, mid);
 
             tableModel.addRow(new Object[]{++iteration, a, b, mid, f_of_mid});
 
-            if(f(expression, mid) < 0) {
+            if(f_of_mid < 0) {
                 a = mid;
-                //f_of_a = f_of_mid;
             }
-            else if (f(expression, mid) > 0){
+            else if (f_of_mid > 0){
                 b = mid;
-                //f_of_b = f_of_mid;
-
             }
             else {
                 return mid;
             }
         }
+
+        if (iteration >= maxIterations) {
+            Errors.iterationLimitError();
+        }
+
         return mid;
     }
 
