@@ -34,7 +34,7 @@ public class InputOutputUI extends JFrame {
     public InputOutputUI() { // Changed this line
 
         // Frame Setup
-        this.setTitle("Algebraic & Transcendental Equation Solver (Beta 0.1)");
+        this.setTitle("Algebraic & Transcendental Equation Solver (Beta 0.2.1)");
         this.setSize(750, 750);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
@@ -146,14 +146,32 @@ public class InputOutputUI extends JFrame {
 
                 double root = 0;
 
-                tableModel = new DefaultTableModel();
+                tableModel.setRowCount(0);
 
                 if (bisectionRadio.isSelected()) {
+
+                    String[] columnNames = {"Iteration", "Lower Bound (a)", "Upper Bound (b)", "Midpoint", "f(Midpoint)"};
+                    tableModel = new DefaultTableModel(columnNames, 0);
+                    table.setModel(tableModel);
+
                     root = Bisection.execute(expression, a, b, tolerance, tableModel);
+
                 } else if (falsePositionRadio.isSelected()) {
+
+                    String[] columnNames = {"Iteration", "Lower Bound (a)", "Upper Bound (b)", "Midpoint", "f(a)", "f(b)", "f(Midpoint)"};
+                    tableModel = new DefaultTableModel(columnNames, 0);
+                    table.setModel(tableModel);
+
                     root = FalsePosition.execute(expression, a, b, tolerance, tableModel);
+
                 } else if (newtonRaphsonRadio.isSelected()) {
+
+                    String[] columnNames = {"Iteration", "Xn", "Xn+1"};
+                    tableModel = new DefaultTableModel(columnNames, 0);
+                    table.setModel(tableModel);
+
                     root = NewtonRaphson.execute(expression, a, b, tolerance, tableModel);
+
                 }
 
                 resultLabel.setText("Root: " + (Double.isNaN(root) ? "No root in interval" : root));
