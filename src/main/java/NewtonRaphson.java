@@ -1,15 +1,15 @@
 import net.objecthunter.exp4j.Expression;
-
-import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 public class NewtonRaphson {
 
     public static double execute(Expression expression, double a, double b, double tolerance, DefaultTableModel tableModel) {
 
+        if (f(expression, a) * f(expression, b) > 0) return Double.NaN;
+
         int iteration = 0;
         double x_n; // Starting point
-        double x_n_plus_1 = a; // Next approximation
+        double x_n_plus_1 = a; // Value inserted to keep while loop logic sound
 
         double h = 1e-5; // Step size for numerical derivative, 0.00001
 
@@ -30,10 +30,10 @@ public class NewtonRaphson {
                // Sending Table Data to the Table
                tableModel.addRow(new Object[]{++iteration, x_n, x_n_plus_1});
 
-           } while (Math.abs(x_n_plus_1 - x_n) > tolerance); // Continue until the function value is within tolerance
-       } catch (ArithmeticException ex) {
-           JOptionPane.showMessageDialog(null, "Cannot divide by zero!",
-                   "Arithmetic Exception Occurred!", JOptionPane.ERROR_MESSAGE);
+           } while (Math.abs(x_n_plus_1 - x_n) >= tolerance);
+       }
+       catch (ArithmeticException ex) {
+           Errors.divisionByZeroError();
        }
         return x_n_plus_1; // Return the approximate root
     }
