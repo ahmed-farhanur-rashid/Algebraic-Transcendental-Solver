@@ -16,15 +16,15 @@ public class Bisection {
             mid = (a + b) / 2;
             f_of_mid = f(expression, mid);
 
-            tableModel.addRow(new Object[]{++iteration, a, b, mid, f_of_a, f_of_b, f_of_mid});
+            tableModel.addRow(new Object[]{++iteration, a, b, mid, f_of_mid});
 
             if(f(expression, mid) < 0) {
                 a = mid;
-                f_of_a = f_of_mid;
+                //f_of_a = f_of_mid;
             }
             else if (f(expression, mid) > 0){
                 b = mid;
-                f_of_b = f_of_mid;
+                //f_of_b = f_of_mid;
 
             }
             else {
