@@ -13,9 +13,9 @@ public class InputOutputUI extends JFrame {
 
     // Text fields for input (4)
     private final JTextField functionField;
+    private final JTextField toleranceField;
     private final JTextField aField;
     private final JTextField bField;
-    private final JTextField toleranceField;
 
     // Radio buttons for selecting calculation methods (3)
     private final JRadioButton bisectionRadio;
@@ -54,9 +54,9 @@ public class InputOutputUI extends JFrame {
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         functionField = new JTextField();
+        toleranceField = new JTextField();
         aField = new JTextField();
         bField = new JTextField();
-        toleranceField = new JTextField();
 
         autoFind_AB_Checkbox = new JCheckBox("Automatically find interval [a, b]");
 
@@ -164,7 +164,6 @@ public class InputOutputUI extends JFrame {
                 if (foundInterval) {
                     aField.setText(String.valueOf(a));
                     bField.setText(String.valueOf(b));
-                    JOptionPane.showMessageDialog(null, "Interval Found");
                 }
                 else
                 {
@@ -224,7 +223,12 @@ public class InputOutputUI extends JFrame {
             toleranceField.setText("");
             aField.setText("");
             bField.setText("");
-            tableModel.setRowCount(0); // Clear the table
+
+            // Clearing table non need to tableModel.setRowCount(0);
+            tableModel = null;
+            tableModel = new DefaultTableModel(); // Dummy table model, needed to create table properly.
+            table.setModel(tableModel);
+
             resultLabel.setText("Root: "); // Reset the result label
             resultLabel.setForeground(Color.BLACK);
         }
