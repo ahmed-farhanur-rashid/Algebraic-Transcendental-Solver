@@ -4,7 +4,7 @@ import javax.swing.table.DefaultTableModel;
 public class FalsePosition {
     public static double execute(Expression expression, double a, double b, double tolerance, DefaultTableModel tableModel) {
 
-        final int maxIterations = 100;
+        final int maxIterations = 101;
         int iteration = 0;
         double prev_mid;
         double mid = 0;
@@ -34,7 +34,7 @@ public class FalsePosition {
                 return mid;
             }
 
-        } while (Math.abs(prev_mid - mid) > tolerance && iteration < maxIterations);
+        } while (Math.abs(prev_mid - mid) >= tolerance && iteration < maxIterations);
 
         if (iteration == maxIterations) {
             Errors.iterationLimitError();
