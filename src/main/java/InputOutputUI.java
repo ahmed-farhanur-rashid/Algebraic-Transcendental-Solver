@@ -21,6 +21,7 @@ public class InputOutputUI extends JFrame {
     private final JRadioButton bisectionRadio;
     private final JRadioButton falsePositionRadio;
     private final JRadioButton newtonRaphsonRadio;
+    private final ButtonGroup methodGroup;
 
     // Checkbox for automating finding process for [a,b] (1)
     @SuppressWarnings("FieldCanBeLocal")
@@ -41,7 +42,7 @@ public class InputOutputUI extends JFrame {
     public InputOutputUI() { // Changed this line
 
         // Frame Setup
-        this.setTitle("Algebraic & Transcendental Equation Solver (Stable Release 1.0.0)");
+        this.setTitle("Algebraic & Transcendental Equation Solver (Stable Release 1.1.0)");
         this.setSize(750, 750);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
@@ -64,7 +65,7 @@ public class InputOutputUI extends JFrame {
         falsePositionRadio = new JRadioButton("False Position Method");
         newtonRaphsonRadio = new JRadioButton("Newton-Raphson Method");
 
-        ButtonGroup methodGroup = new ButtonGroup();
+        methodGroup = new ButtonGroup();
         methodGroup.add(bisectionRadio);
         methodGroup.add(falsePositionRadio);
         methodGroup.add(newtonRaphsonRadio);
@@ -223,6 +224,9 @@ public class InputOutputUI extends JFrame {
             toleranceField.setText("");
             aField.setText("");
             bField.setText("");
+
+            autoFind_AB_Checkbox.setSelected(false);
+            methodGroup.clearSelection();
 
             // Clearing table non need to tableModel.setRowCount(0);
             tableModel = null;
