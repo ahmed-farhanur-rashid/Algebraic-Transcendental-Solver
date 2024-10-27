@@ -21,10 +21,13 @@ public class NewtonRaphson {
             do {
                 x_n = x_n_plus_1;
 
-                f_of_x_n = f(expression, x_n); // Evaluate the function at x_n
-                df_of_x_n = (f(expression, x_n + h) - f(expression, x_n - h)) / (2 * h); // Centered difference approximation for derivative
+                // Evaluate the function at x_n
+                // Centered difference approximation for derivative
 
-                x_n_plus_1 = x_n - (f_of_x_n / df_of_x_n); // Update x_n_plus_1 using the Newton-Raphson formula
+                f_of_x_n = f(expression, x_n);
+                df_of_x_n = (f(expression, x_n + h) - f(expression, x_n - h)) / (2 * h);
+
+                x_n_plus_1 = x_n - (f_of_x_n / df_of_x_n); // Update x_n_plus_1 using Newton-Raphson formula
 
                 tableModel.addRow(new Object[]{++iteration, x_n, x_n_plus_1});
             } while (Math.abs(x_n_plus_1 - x_n) >= tolerance && iteration < maxIterations);
