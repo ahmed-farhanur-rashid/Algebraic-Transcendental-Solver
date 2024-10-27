@@ -6,15 +6,13 @@ public class Bisection {
 
         if (f(expression, a) * f(expression, b) > 0) return Double.NaN;
 
-        final int maxIterations = 1001;
+        final int maxIterations = 101;
         int iteration = 0;
-        double mid = 0;
+        double mid;
         double f_of_mid;
 
-        while(Math.abs(a - b) > tolerance && iteration < maxIterations) {
-
+        do {
             mid = a + (b - a) / 2; // Same as mid = (a + b) / 2 but is more error free
-
             f_of_mid = f(expression, mid);
 
             tableModel.addRow(new Object[]{++iteration, a, b, mid, f_of_mid});
@@ -28,7 +26,7 @@ public class Bisection {
             else {
                 return mid;
             }
-        }
+        } while(Math.abs(a - b) >= tolerance && iteration < maxIterations);
 
         if (iteration >= maxIterations) {
             Errors.iterationLimitError();
