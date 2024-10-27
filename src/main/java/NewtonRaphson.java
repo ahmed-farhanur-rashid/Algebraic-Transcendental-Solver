@@ -7,6 +7,7 @@ public class NewtonRaphson {
 
         if (f(expression, a) * f(expression, b) > 0) return Double.NaN;
 
+        final int maxIterations = 101;
         int iteration = 0;
         double x_n; // Starting point
         double x_n_plus_1 = a; // Value inserted to keep while loop logic sound
@@ -16,25 +17,25 @@ public class NewtonRaphson {
         double f_of_x_n;
         double df_of_x_n;
 
-       try {
-           // Initialize the first iteration
-           do {
-               x_n = x_n_plus_1;
+        try {
+            do {
+                x_n = x_n_plus_1;
 
-               f_of_x_n = f(expression, x_n); // Evaluate the function at x_n
-               df_of_x_n = (f(expression, x_n + h) - f(expression, x_n - h)) / (2 * h); // Centered difference approximation for derivative
+                f_of_x_n = f(expression, x_n); // Evaluate the function at x_n
+                df_of_x_n = (f(expression, x_n + h) - f(expression, x_n - h)) / (2 * h); // Centered difference approximation for derivative
 
-               // Update x_n_plus_1 using the Newton-Raphson formula
-               x_n_plus_1 = x_n - (f_of_x_n / df_of_x_n);
+                x_n_plus_1 = x_n - (f_of_x_n / df_of_x_n); // Update x_n_plus_1 using the Newton-Raphson formula
 
-               // Sending Table Data to the Table
-               tableModel.addRow(new Object[]{++iteration, x_n, x_n_plus_1});
+                tableModel.addRow(new Object[]{++iteration, x_n, x_n_plus_1});
+            } while (Math.abs(x_n_plus_1 - x_n) >= tolerance && iteration < maxIterations);
 
-           } while (Math.abs(x_n_plus_1 - x_n) >= tolerance);
-       }
-       catch (ArithmeticException ex) {
-           Errors.divisionByZeroError();
-       }
+            if (iteration == maxIterations) {
+                Errors.iterationLimitError();
+            }
+        }
+        catch (ArithmeticException ex) {
+            Errors.divisionByZeroError();
+        }
         return x_n_plus_1; // Return the approximate root
     }
 
