@@ -42,7 +42,7 @@ public class InputOutputUI extends JFrame {
     public InputOutputUI() { // Changed this line
 
         // Frame Setup
-        this.setTitle("Algebraic & Transcendental Equation Solver (Stable Release 1.1.0)");
+        this.setTitle("Algebraic & Transcendental Equation Solver (Stable Release 1.2.0)");
         this.setSize(750, 750);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
@@ -131,28 +131,17 @@ public class InputOutputUI extends JFrame {
                 String stringExpression = functionField.getText();
                 Expression expression = new ExpressionBuilder(stringExpression).variables("x").build();
 
-
                 // Code snippet to find interval [a, b]
-                double a = 0;
-                double b = 1;
-                boolean foundInterval = false;
 
-// First try: Search for the interval in positive range
-                while (b <= 5000) {
-                    if (f(expression, a) * f(expression, b) < 0) {
-                        foundInterval = true; // Found an interval
-                        break;
-                    }
-                    a = b;
-                    b++;
-                }
+                double a;
+                double b;
 
-                // If no interval found, search in the negative range
-                if (!foundInterval) {
-                    a = -5000;
-                    b = -4999;
+                if(autoFind_AB_Checkbox.isSelected()) {
+                    a = 0;
+                    b = 1;
+                    boolean foundInterval = false;
 
-                    while (b < 0) {
+                    while (b <= 5000) {
                         if (f(expression, a) * f(expression, b) < 0) {
                             foundInterval = true; // Found an interval
                             break;
@@ -160,19 +149,38 @@ public class InputOutputUI extends JFrame {
                         a = b;
                         b++;
                     }
-                }
 
-                if (foundInterval) {
-                    aField.setText(String.valueOf(a));
-                    bField.setText(String.valueOf(b));
-                }
-                else
-                {
-                    aField.setText("No interval found");
-                    bField.setText("No interval found");
+                    // If no interval found, search in the negative range
+                    if (!foundInterval) {
+                        a = -5000;
+                        b = -4999;
 
-                    // Show an error message to the user
-                    Errors.noIntervalError();
+                        while (b < 0) {
+                            if (f(expression, a) * f(expression, b) < 0) {
+                                foundInterval = true; // Found an interval
+                                break;
+                            }
+                            a = b;
+                            b++;
+                        }
+                    }
+
+                    if (foundInterval) {
+                        aField.setText(String.valueOf(a));
+                        bField.setText(String.valueOf(b));
+                    }
+                    else
+                    {
+                        aField.setText("No interval found");
+                        bField.setText("No interval found");
+
+                        // Show an error message to the user
+                        Errors.noIntervalError();
+                    }
+                }
+                else {
+                    a = Double.parseDouble(aField.getText());
+                    b = Double.parseDouble(bField.getText());
                 }
 
                 // End of code snippet
@@ -191,7 +199,8 @@ public class InputOutputUI extends JFrame {
 
                     root = Bisection.execute(expression, a, b, tolerance, tableModel);
 
-                } else if (falsePositionRadio.isSelected()) {
+                }
+                else if (falsePositionRadio.isSelected()) {
 
                     String[] columnNames = {"Iteration", "Lower Bound (a)", "Upper Bound (b)", "Midpoint", "f(a)", "f(b)", "f(Midpoint)"};
                     tableModel = new DefaultTableModel(columnNames, 0);
@@ -199,7 +208,8 @@ public class InputOutputUI extends JFrame {
 
                     root = FalsePosition.execute(expression, a, b, tolerance, tableModel);
 
-                } else if (newtonRaphsonRadio.isSelected()) {
+                }
+                else if (newtonRaphsonRadio.isSelected()) {
 
                     String[] columnNames = {"Iteration", "<html>X<sub>n</sub></html>", "<html>X<sub>n+1</sub></html>"};
                     tableModel = new DefaultTableModel(columnNames, 0);
