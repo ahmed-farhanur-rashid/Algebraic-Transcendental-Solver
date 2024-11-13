@@ -127,7 +127,9 @@ public class InputOutputUI extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+
             try {
+
                 String stringExpression = functionField.getText();
                 Expression expression = new ExpressionBuilder(stringExpression).variables("x").build();
 
@@ -137,44 +139,17 @@ public class InputOutputUI extends JFrame {
                 double b;
 
                 if(autoFind_AB_Checkbox.isSelected()) {
-                    a = 0;
-                    b = 1;
-                    boolean foundInterval = false;
 
-                    while (b <= 5000) {
-                        if (f(expression, a) * f(expression, b) < 0) {
-                            foundInterval = true; // Found an interval
-                            break;
-                        }
-                        a = b;
-                        b++;
-                    }
+                    Interval interval = IntervalFinder.findInterval(expression);
+                    a = interval.a;
+                    b = interval.b;
 
-                    // If no interval found, search in the negative range
-                    if (!foundInterval) {
-                        a = -5000;
-                        b = -4999;
+                    boolean isNaN = Double.isNaN(a) || Double.isNaN(b);
 
-                        while (b < 0) {
-                            if (f(expression, a) * f(expression, b) < 0) {
-                                foundInterval = true; // Found an interval
-                                break;
-                            }
-                            a = b;
-                            b++;
-                        }
-                    }
+                    aField.setText(isNaN ? "No interval found" : String.valueOf(a));
+                    bField.setText(isNaN ? "No interval found" : String.valueOf(b));
 
-                    if (foundInterval) {
-                        aField.setText(String.valueOf(a));
-                        bField.setText(String.valueOf(b));
-                    }
-                    else
-                    {
-                        aField.setText("No interval found");
-                        bField.setText("No interval found");
-
-                        // Show an error message to the user
+                    if(isNaN) {
                         Errors.noIntervalError();
                     }
                 }
@@ -228,8 +203,10 @@ public class InputOutputUI extends JFrame {
     }
 
     private class ClearButtonListener implements ActionListener {
+
         @Override
         public void actionPerformed(ActionEvent e) {
+
             functionField.setText("");
             toleranceField.setText("");
             aField.setText("");
