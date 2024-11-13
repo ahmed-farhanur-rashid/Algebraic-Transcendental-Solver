@@ -224,9 +224,4 @@ public class InputOutputUI extends JFrame {
             resultLabel.setForeground(Color.BLACK);
         }
     }
-
-    private static double f(Expression expression, double x) {
-        expression.setVariable("x", x);
-        return expression.evaluate();
-    }
 }
